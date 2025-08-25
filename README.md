@@ -1,11 +1,29 @@
-# Multimodal-AD-ClassificationThis repository contains the source code for my bachelor thesis on **Alzheimer's disease classification** using multimodal deep learning.The project integrates **MRI data** and **clinical tabular data** from the ADNI dataset, comparing unimodal baselines with a late-fusion multimodal model.## Features- **Multimodal Deep Learning**: Late-fusion architecture combining 3D CNN for MRI data and MLP for clinical data- **Cross-Validation**: 5-fold stratified cross-validation for robust evaluation- **Experiment Tracking**: Weights & Biases (wandb) integration for comprehensive logging- **Hyperparameter Optimization**: Automated hyperparameter sweeps- **Data Augmentation**: 3D augmentations for MRI data (flip, affine, noise)- **GPU Optimization**: PyTorch Lightning with gradient accumulation and efficient data loading## Project Structure```├── Imaging/                    # MRI data processing and modeling│   ├── img_model.py           # 3D ResNet18 architecture (MONAI)│   ├── img_data.py            # MRI data loading and preprocessing│   ├── img_train.py           # Training script for MRI-only baseline
+# Multimodal-AD-Classification
+
+This repository contains the source code for my bachelor thesis on **Alzheimer's disease classification** using multimodal deep learning.The project integrates **MRI data** and **clinical tabular data** from the ADNI dataset, comparing unimodal baselines with a late-fusion multimodal model.
+
+## Features
+- **Multimodal Deep Learning**: Late-fusion architecture combining 3D CNN for MRI data and MLP for clinical data
+- **Cross-Validation**: 5-fold stratified cross-validation for robust evaluation
+- **Experiment Tracking**: Weights & Biases (wandb) integration for comprehensive logging
+- **Hyperparameter Optimization**: Automated hyperparameter sweeps
+- **Data Augmentation**: 3D augmentations for MRI data (flip, affine, noise)
+- **GPU Optimization**: PyTorch Lightning with gradient accumulation and efficient data loading
+
+## Project Structure
+
+```
+├── Imaging/                   # MRI data processing and modeling
+│   ├── img_model.py           # 3D ResNet18 architecture (MONAI)
+│   ├── img_data.py            # MRI data loading and preprocessing
+│   ├── img_train.py           # Training script for MRI-only baseline
 │   └── config.py              # Imaging-specific configuration
-├── Clinical/                   # Clinical tabular data processing and modeling
+├── Clinical/                  # Clinical tabular data processing and modeling
 │   ├── clinical_model.py      # Multi-layer perceptron for clinical data
 │   ├── clinical_data.py       # Clinical data preprocessing
 │   ├── clinical_train.py      # Training script for clinical-only baseline
 │   └── config.py              # Clinical-specific configuration
-├── Pre-processing/             # Data preparation and analysis
+├── Pre-processing/            # Data preparation and analysis
 │   ├── create_clinical_dataset.ipynb
 │   ├── create_meta_csv.ipynb
 │   ├── create_multimodal_csv.ipynb
@@ -58,7 +76,6 @@
 
 ### Training the Multimodal Model
 ```bash
-export RUN_NUMBER="experiment_001"
 python multimodal_train.py
 ```
 
@@ -99,3 +116,4 @@ See `config.py` for all available parameters.
 ## License
 
 MIT License - see LICENSE file for details.
+
