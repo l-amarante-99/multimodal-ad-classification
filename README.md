@@ -1,4 +1,4 @@
-# Multimodal-AD-Classification
+# Multimodal Alzheimer's Disease Classification
 
 This repository contains the source code for my bachelor thesis on **Alzheimer's disease classification** using multimodal deep learning.The project integrates **MRI data** and **clinical tabular data** from the ADNI dataset, comparing unimodal baselines with a late-fusion multimodal model.
 
@@ -40,7 +40,7 @@ This repository contains the source code for my bachelor thesis on **Alzheimer's
 
 - **ADNI (Alzheimer's Disease Neuroimaging Initiative)**
 - MRI scans: T1-weighted structural images, preprocessed to (96, 96, 96) voxels
-- Clinical data: Demographics, cognitive assessments, biomarkers (50 features)
+- Clinical data: Demographics, cognitive assessments, biomarkers (14 features)
 - Binary classification: Cognitive Normal (CN) vs Alzheimer's Disease (AD)
 
 ## Models
@@ -116,4 +116,5 @@ See `config.py` for all available parameters.
 ## License
 
 MIT License - see LICENSE file for details.
+
 
