@@ -3,7 +3,7 @@ import subprocess
 import itertools
 import uuid
 
-LEARNING_RATES = [1e-4, 5e-5]
+LEARNING_RATES = [1e-3, 1e-4, 5e-5]
 BATCH_SIZE = 8  # Fixed batch size! (Set after experimentation)
 ACCUMULATE_GRAD_BATCHES = [2, 4]
 DROPOUT_PROBS = [0.2, 0.3]
@@ -64,3 +64,4 @@ if __name__ == "__main__":
     print(f"Sweep ID: {SWEEP_ID}")
     print(f"Successful runs: {successful_runs}/{total_runs}")
     print(f"Failed runs: {failed_runs}/{total_runs}")
+
