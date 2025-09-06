@@ -17,11 +17,13 @@ This repository contains the source code for my bachelor thesis on **Alzheimer's
 │   ├── img_model.py           # 3D ResNet18 architecture (MONAI)
 │   ├── img_data.py            # MRI data loading and preprocessing
 │   ├── img_train.py           # Training script for MRI-only baseline
+|   ├── img_sweep.py           # Hyperparameter sweep automation
 │   └── config.py              # Imaging-specific configuration
 ├── Clinical/                  # Clinical tabular data processing and modeling
 │   ├── clinical_model.py      # Multi-layer perceptron for clinical data
 │   ├── clinical_data.py       # Clinical data preprocessing
 │   ├── clinical_train.py      # Training script for clinical-only baseline
+|   ├── clinical_sweep.py      # Hyperparameter sweep automation
 │   └── config.py              # Clinical-specific configuration
 ├── Pre-processing/            # Data preparation and analysis
 │   ├── create_clinical_dataset.ipynb
@@ -40,7 +42,7 @@ This repository contains the source code for my bachelor thesis on **Alzheimer's
 
 - **ADNI (Alzheimer's Disease Neuroimaging Initiative)**
 - MRI scans: T1-weighted structural images, preprocessed to (96, 96, 96) voxels
-- Clinical data: Demographics, cognitive assessments, biomarkers (14 features)
+- Clinical data: Demographics, cognitive assessments, health history (17 features)
 - Binary classification: Cognitive Normal (CN) vs Alzheimer's Disease (AD)
 
 ## Models
@@ -93,6 +95,15 @@ python Imaging/img_train.py
 python Clinical/clinical_train.py
 ```
 
+### Hyperparameter Sweep
+```bash
+# MRI-only baseline
+python Imaging/img_sweep.py
+
+# Clinical-only baseline  
+python Clinical/clinical_sweep.py
+```
+
 ## Configuration
 
 The project uses environment variables for flexible configuration:
@@ -116,5 +127,6 @@ See `config.py` for all available parameters.
 ## License
 
 MIT License - see LICENSE file for details.
+
 
 
