@@ -1,4 +1,5 @@
 import numpy as np
+import os
 import torch
 import wandb
 from pytorch_lightning import Trainer, seed_everything
@@ -7,6 +8,22 @@ from pytorch_lightning.loggers import WandbLogger
 from clinical_data import ClinicalDataModule
 from clinical_model import ClinicalMLP
 from config import config
+
+# Environment variable overrides for sweep
+if "LEARNING_RATE" in os.environ:
+    config.learning_rate = float(os.environ["LEARNING_RATE"])
+    print(f"Environment override: learning_rate = {config.learning_rate}")
+
+if "BATCH_SIZE" in os.environ:
+    config.batch_size = int(os.environ["BATCH_SIZE"])
+    print(f"Environment override: batch_size = {config.batch_size}")
+
+if "HIDDEN_DIMS" in os.environ:
+    config.hidden_dims = [int(x) for x in os.environ["HIDDEN_DIMS"].split(",")]
+    print(f"Environment override: hidden_dims = {config.hidden_dims}")
+
+# Get run name prefix from environment
+wandb_name_prefix = os.environ.get("WANDB_NAME_PREFIX", "")
 
 def setup_training_environment():
     """Setup training environment and optimizations."""
@@ -36,10 +53,8 @@ def train_fold(fold: int, group_name: str):
         pin_memory=config.pin_memory,
     )
     dm.setup(stage='fit')
-
-    print(f"Training data shape: {dm.X_train.shape if dm.X_train is not None else 'None'}")
-    print(f"Validation data shape: {dm.X_val.shape if dm.X_val is not None else 'None'}")
     
+    # Check dataloader batch counts
     train_loader = dm.train_dataloader()
     val_loader = dm.val_dataloader()
     print(f"Number of training batches: {len(train_loader)}")
@@ -79,7 +94,7 @@ def train_fold(fold: int, group_name: str):
     wandb_logger = WandbLogger(
         project=config.project_name,
         group=group_name,
-        name=f"fold-{fold+1}-batch-size={config.batch_size}-lr={config.learning_rate}-patience={config.patience}",
+        name=f"{wandb_name_prefix}-fold-{fold+1}" if wandb_name_prefix else f"fold-{fold+1}-batch-size={config.batch_size}-lr={config.learning_rate}-patience={config.patience}-architecture={config.hidden_dims}",
         config=wandb_config,
     )
 
@@ -96,7 +111,6 @@ def train_fold(fold: int, group_name: str):
 
     best_model = ClinicalMLP.load_from_checkpoint(callbacks[0].best_model_path)
     val_results = trainer.validate(best_model, dataloaders=dm.val_dataloader())[0]
-
     wandb_logger.experiment.finish()
     
     if torch.cuda.is_available():
@@ -117,10 +131,9 @@ def log_cv_summary(metrics: dict, group_name: str):
     
     summary_logger = WandbLogger(
         project=config.project_name, group=group_name,
-        name="cv-summary", config=wandb_config,
+        name=f"{wandb_name_prefix}-cv-summary" if wandb_name_prefix else f"cv-summary-batch-size={config.batch_size}-lr={config.learning_rate}-architecture={config.hidden_dims}", config=wandb_config,
     )
-    
-    # Calculate CV statistics
+
     cv_stats = {
         f"cv_{metric}_{stat}": func(metrics[metric])
         for metric in ['acc', 'f1', 'auc']
@@ -130,7 +143,7 @@ def log_cv_summary(metrics: dict, group_name: str):
     summary_logger.experiment.summary.update(cv_stats)
     summary_logger.log_metrics(cv_stats)
 
-    print("\n--- Cross-Validation Results ---")
+    print("\nCross-Validation Results:")
     for metric in ['acc', 'f1', 'auc']:
         print(f"CV {metric.upper()}: {cv_stats[f'cv_{metric}_mean']:.4f} ± {cv_stats[f'cv_{metric}_std']:.4f}")
     
@@ -143,7 +156,6 @@ def main():
         group_name = f"cv-experiment-{int(__import__('time').time())}"
         metrics = {"acc": [], "f1": [], "auc": []}
 
-        # Cross-validation training
         for fold in range(config.n_splits):
             fold_metrics = train_fold(fold, group_name)
             for metric in metrics:
